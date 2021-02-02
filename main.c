@@ -48,10 +48,11 @@ struct error_domain const main_error_domain = {
 	"main"};
 
 bool update_scratcher_profit(
-	void *in_out_profit,
+	void *in_out_payout,
 	GumboNode const *in_node,
 	struct error *out_error){
-	double *profit;
+	static char odds_string[64];
+	double *payout;
 	GumboAttribute const *attribute;
 	GumboAttribute const **attribute_list_data;
 	GumboAttribute const **attribute_list_data_end;
@@ -65,14 +66,13 @@ bool update_scratcher_profit(
 	size_t i;
 	size_t n;
 	char character;
-	static char odds_string[64];
 	if(in_node->type != GUMBO_NODE_ELEMENT){
 		return true;}
 	if(in_node->v.element.tag != GUMBO_TAG_TR){
 		return true;}
 	if(!(length = in_node->v.element.attributes.length)){
 		return true;}
-	profit = (double *)in_out_profit;
+	payout = (double *)in_out_payout;
 	attribute_list_data = (GumboAttribute const **)in_node->
 	v.element.attributes.data;
 	attribute_list_data_end = attribute_list_data + length;
@@ -107,7 +107,7 @@ bool update_scratcher_profit(
 				odds_string[i] = 0;
 				odds = atof(odds_string);}
 			if((prize != 0.0) & (odds != 0.0)){
-				*profit += prize / odds;
+				*payout += prize / odds;
 				break;}
 			++child_list_data;}
 		break;}
@@ -116,7 +116,7 @@ bool update_scratcher_profit(
 void free_best_scratchers_entry(struct lh_entry *unused){
 }
 
-int compare_scratchers_by_percent_profit(
+int compare_scratchers_by_payout_ratio(
 	void const *left,
 	void const *right){
 	struct json_object *left_scratcher;
@@ -126,9 +126,9 @@ int compare_scratchers_by_percent_profit(
 	left_scratcher = *(struct json_object **)left;
 	right_scratcher = *(struct json_object **)right;
 	left_value = json_object_get_double(json_object_object_get(left_scratcher,
-	"percentProfit"));
+	"payoutRatio"));
 	right_value = json_object_get_double(json_object_object_get(right_scratcher,
-	"percentProfit"));
+	"payoutRatio"));
 	if(left_value < right_value){
 		return 1;}
 	else if(left_value == right_value){
@@ -145,13 +145,11 @@ int main(){
 	struct json_object *scratcher;
 	struct json_object *scratcher_page;
 	struct json_object *scratcher_price;
-	struct json_object *scratcher_profit;
-	struct json_object *scratcher_percent_profit;
+	struct json_object *scratcher_payout;
+	struct json_object *scratcher_payout_ratio;
 	GumboOutput *html;
-	char const *price_string;
 	struct error error;
-	double profit;
-	double price;
+	double payout;
 	size_t header_length;
 	size_t body_length;
 	size_t i;
@@ -200,8 +198,8 @@ int main(){
 		if(!(html = gumbo_parse((char const *)body_data))){
 			error.code = MAIN_ERROR_CODE_GUMBO_PARSE;
 			goto main_failure;}
-		profit = 0.0;
-		if(!gumbo_traverse_tree(html->root, &profit, &update_scratcher_profit, 
+		payout = 0.0;
+		if(!gumbo_traverse_tree(html->root, &payout, &update_scratcher_profit, 
 		&error)){
 			goto main_failure;}
 		gumbo_destroy_output(&kGumboDefaultOptions, html);
@@ -210,38 +208,37 @@ int main(){
 		header_data = NULL;
 		free(body_data);
 		body_data = NULL;
-		if(!(scratcher_price = json_object_object_get(scratcher, "GamePrice"))){
-			error.code = MAIN_ERROR_CODE_JSON_OBJECT_OBJECT_GET;
-			goto main_failure;}
-		profit -= (price = atof(json_object_get_string(scratcher_price) + 1));
-		if(!(scratcher_profit = json_object_new_double(profit))){
+		if(!(scratcher_payout = json_object_new_double(payout))){
 			error.code = MAIN_ERROR_CODE_JSON_OBJECT_NEW_DOUBLE;
 			goto main_failure;}
-		if(json_object_object_add_ex(scratcher, "profit", scratcher_profit,
+		if(json_object_object_add_ex(scratcher, "payout", scratcher_payout,
 		(JSON_C_OBJECT_ADD_KEY_IS_NEW | JSON_C_OBJECT_KEY_IS_CONSTANT))){
 			error.code = MAIN_ERROR_CODE_JSON_OBJECT_OBJECT_ADD_EX;
 			goto main_failure;}
-		if(!(scratcher_percent_profit = json_object_new_double(profit / price * 
-		100.0))){
+		if(!(scratcher_price = json_object_object_get(scratcher, "GamePrice"))){
+			error.code = MAIN_ERROR_CODE_JSON_OBJECT_OBJECT_GET;
+			goto main_failure;}
+		if(!(scratcher_payout_ratio = json_object_new_double(payout / atof(
+		json_object_get_string(scratcher_price) + 1)))){
 			error.code = MAIN_ERROR_CODE_JSON_OBJECT_NEW_DOUBLE;
 			goto main_failure;}
-		if(json_object_object_add_ex(scratcher, "percentProfit", 
-		scratcher_percent_profit, (JSON_C_OBJECT_ADD_KEY_IS_NEW | 
+		if(json_object_object_add_ex(scratcher, "payoutRatio", 
+		scratcher_payout_ratio, (JSON_C_OBJECT_ADD_KEY_IS_NEW | 
 		JSON_C_OBJECT_KEY_IS_CONSTANT))){
 			error.code = MAIN_ERROR_CODE_JSON_OBJECT_OBJECT_ADD_EX;
 			goto main_failure;}
 		++i;}
-	json_object_array_sort(scratcher_list, &compare_scratchers_by_percent_profit);
+	json_object_array_sort(scratcher_list, &compare_scratchers_by_payout_ratio);
 	i = 0;
 	n = json_object_array_length(scratcher_list);
-	fputs("\npercent_profit,profit,price,name,number\n", stdout);
+	fputs("\npayoutRatio,payout,price,name,number\n", stdout);
 	while(i < n){
 		if(!(scratcher = json_object_array_get_idx(scratcher_list, i))){
 			error.code = MAIN_ERROR_CODE_ARRAY_GET_IDX;
 			goto main_failure;}
 		fprintf(stdout, "%lf,%s,%s,\"%s\",%s\n", json_object_get_double(
-		json_object_object_get(scratcher, "percentProfit")), 
-		json_object_get_string(json_object_object_get(scratcher, "profit")),(
+		json_object_object_get(scratcher, "payoutRatio")), 
+		json_object_get_string(json_object_object_get(scratcher, "payout")),(
 		json_object_get_string(json_object_object_get(scratcher, "GamePrice")) + 1),
 		json_object_get_string(json_object_object_get(scratcher, "GameName")),
 		json_object_get_string(json_object_object_get(scratcher, "GameNumber")));
