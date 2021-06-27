@@ -1,0 +1,23 @@
+{
+  "name": "calottery-scratchers",
+  "version": "1.0.0",
+  "description": "Console application that lists the average payouts of the calottery scratcher cards.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/protovision/calottery-scratchers.git"
+  },
+  "author": "Mark Swoope <markswoope@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/protovision/lambda-scratcher/issues"
+  },
+  "homepage": "https://github.com/protovision/calottery-scratchers",
+  "dependencies": {
+    "node-fetch": "2.x",
+    "jsdom": "16.x"
+  }
+}
