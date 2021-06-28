@@ -45,29 +45,29 @@
 					.json())
 				; const totalScratchers = scratcherData.TotalScratcherCards
 				; (await
-					(Promise.all
-						(scratcherData
-						.SerializedScratcherCardList
-						.map((scratcher) =>
-							({name: scratcher.GameName
-							, number: scratcher.GameNumber
-							, page: scratcher.GameProductPage
-							, price: Number(scratcher.GamePrice.replace(/\$/g, ""))}))
-						.map(async (scratcher) =>
-							({name: scratcher.name
-							, number: scratcher.number
-							, price: scratcher.price
-							, payoutRatio: await
-								(fetchPayoutRatio(scratcher.price, scratcher.page)
-								.then
-									((payoutRatio) =>
-										{console.log
-											(++processedScratchers
-											, "of"
-											, totalScratchers 
-											, ":"
-											, scratcher.page);
-										return payoutRatio}))})))))
+						(Promise.all
+							(scratcherData
+							.SerializedScratcherCardList
+							.map((scratcher) =>
+								({name: scratcher.GameName
+								, number: scratcher.GameNumber
+								, page: scratcher.GameProductPage
+								, price: Number(scratcher.GamePrice.replace(/\$/g, ""))}))
+							.map(async (scratcher) =>
+								({name: scratcher.name
+								, number: scratcher.number
+								, price: scratcher.price
+								, payoutRatio: await
+									(fetchPayoutRatio(scratcher.price, scratcher.page)
+									.then
+										((payoutRatio) =>
+											{console.log
+												(++processedScratchers
+												, "of"
+												, totalScratchers 
+												, ":"
+												, scratcher.page);
+											return payoutRatio}))})))))
 					.sort((leftScratcher, rightScratcher) =>
 						(leftScratcher.payoutRatio - rightScratcher.payoutRatio))
 					.forEach((scratcher) =>
