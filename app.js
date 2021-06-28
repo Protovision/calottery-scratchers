@@ -44,7 +44,8 @@
 						"api/Sitecore/ScratchersFilteredList/GetScratchers?size=999"))
 					.json())
 				; const totalScratchers = scratcherData.TotalScratcherCards
-				; (await
+				;
+					(await
 						(Promise.all
 							(scratcherData
 							.SerializedScratcherCardList
