@@ -3,6 +3,8 @@ by Mark Swoope
 
 Local web application for calculating the average payouts of CALottery scratchers
 
+![Screenshot](screenshot.png)
+
 ## Dependencies
 
 node.js, npm, make
