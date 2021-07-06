@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<link rel="stylesheet" href="client.css">
+		<script defer src="client.js"></script>
+	</head>
+	<body>
+		<main>
+			<h1>CALottery Scratcher Insight</h1>
+			<form id="api">
+				<label for="status">Status</label>
+				<select id="status" name="status">
+					<option value="Any">Any</option>
+					<option value="Newest Games">Newest Games</option>
+					<option value="Hot Sellers">Hot Sellers</option>
+					<option value="Games Ending Soon">Games Ending Soon</option>
+				</select>
+				<label for="type">Type</label>
+				<select id="type" name="type">
+					<option value="Any">Any</option>
+					<option value="Crossword">Crossword
+					<option value="Poker">Poker</option>
+					<option value="Bingo">Bingo</option>
+					<option value="Tic-Tac-Toe">Tic-Tac-Toe</option>
+					<option value="Match 3">Match 3</option>
+					<option value="Key Number Match">Key Number Match</option>
+					<option value="Key Number Match and Match 3">Key Number Match and Match 3</option>
+					<option value="Find Legend">Find Legend</option>
+					<option value="Match Up">Match Up</option>
+				</select>
+				<label for="price">Price</label>
+				<select id="price" name="price">
+					<option value="Any">Any</option>
+					<option value="1">$1</option>
+					<option value="2">$2</option>
+					<option value="3">$3</option>
+					<option value="5">$5</option>
+					<option value="10">$10</option>
+					<option value="20">$20</option>
+					<option value="30">$30</option>
+				</select>
+				<input type="submit" value="Submit">
+			</form>
+			<div>
+				<div class="hidden lds-dual-ring"></div>
+			</div>
+			<table class="hidden">
+				<thead>
+					<tr>
+						<th>Game</th>
+						<th>Number</th>
+						<th>Status</th>
+						<th>Type</th>
+						<th>Price ($)</th>
+						<th>Payout (%)</th>
+				</thead>
+				<tbody id="results">
+				</tbody>
+			</table>
+		</main>
+	</body>
+</html>
