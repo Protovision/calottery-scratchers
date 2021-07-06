@@ -1,7 +1,7 @@
-# CALottery Scratcher Payout Calculator
+# CALottery Scratcher Insights
 by Mark Swoope
 
-Node.js console application that calculates the average payout of all CALottery scratcher cards.
+Local web application for calculating the average payouts of CALottery scratchers
 
 ## Dependencies
 
@@ -16,6 +16,8 @@ Running make will install the rest of the dependencies locally
 ## Running
 
 `make run`
+
+Then navigate to [http://localhost:3000/](http://localhost:3000/)
 
 ## Unbuilding
 
