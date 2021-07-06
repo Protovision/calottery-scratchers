@@ -20,6 +20,7 @@
     "node-fetch": "2.x",
     "jsdom": "16.x",
     "cors": "2.x",
-    "express": "4.x"
+    "express": "4.x",
+    "deep-freeze-strict": "1.x"
   }
 }
