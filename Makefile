@@ -4,7 +4,7 @@ node_modules package-lock.json:
 all : node_modules package-lock.json
 build : all
 run : server.js node_modules
-	node server.js
+	npm start
 clean :
 	rm -rf node_modules package-lock.json
 unbuild : clean

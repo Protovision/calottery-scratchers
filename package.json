@@ -2,8 +2,8 @@
   "name": "calottery-scratchers",
   "version": "1.0.0",
   "description": "Local web application for calculating the average payouts of CALottery scratchers.",
-  "main": "server.js",
   "scripts": {
+		"start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
