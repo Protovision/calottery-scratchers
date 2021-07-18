@@ -79,7 +79,9 @@ class Application extends React.Component{
 		return(
 			React.createElement(
 				MaterialUI.Box,{
-					margin:"1em"},
+					margin:"1em auto",
+					boxSizing:"border-box",
+					maxWidth:"64em"},
 				React.createElement(
 					MaterialUI.Typography,{
 						variant:"h1",
